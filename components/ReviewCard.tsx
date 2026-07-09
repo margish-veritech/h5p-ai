@@ -1,6 +1,7 @@
 "use client";
 
 import { generateAndDownloadH5P } from "@/lib/generateH5P";
+import { applySummaryUpdate } from "@/lib/mapGeneratedQuestions";
 import type { TrueFalseQuestion } from "@/lib/types";
 
 type ReviewCardProps = {
@@ -20,7 +21,7 @@ export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
   return (
     <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-base font-semibold text-ink">Question {index + 1}</h2>
+        <h2 className="text-base font-semibold text-ink">{question.title}</h2>
         <button
           type="button"
           className="inline-flex h-10 cursor-pointer items-center justify-center rounded-md bg-emerald-700 px-4 text-sm font-semibold text-white transition hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
@@ -33,18 +34,22 @@ export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
       <div className="mt-5 grid gap-4">
         <div className="space-y-2">
           <label
-            htmlFor={`title-${index}`}
+            htmlFor={`summary-${index}`}
             className="block text-sm font-medium text-slate-800"
           >
-            Title
+            Topic summary
           </label>
           <input
-            id={`title-${index}`}
-            value={question.title}
+            id={`summary-${index}`}
+            value={question.summary}
             type="text"
+            placeholder="e.g. What is Psychology"
             className="h-11 w-full rounded-md border border-slate-300 px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
-            onChange={(event) => update("title", event.target.value)}
+            onChange={(event) =>
+              onChange(applySummaryUpdate(question, index, event.target.value))
+            }
           />
+          <p className="text-sm text-slate-500">Title: {question.title}</p>
         </div>
 
         <div className="space-y-2">
