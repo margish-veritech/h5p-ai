@@ -33,6 +33,22 @@ export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
       <div className="mt-5 grid gap-4">
         <div className="space-y-2">
           <label
+            htmlFor={`title-${index}`}
+            className="block text-sm font-medium text-slate-800"
+          >
+            Title
+          </label>
+          <input
+            id={`title-${index}`}
+            value={question.title}
+            type="text"
+            className="h-11 w-full rounded-md border border-slate-300 px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
+            onChange={(event) => update("title", event.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label
             htmlFor={`question-${index}`}
             className="block text-sm font-medium text-slate-800"
           >
@@ -75,10 +91,10 @@ export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
             </label>
             <input
               id={`feedback-correct-${index}`}
-              value={question.feedbackCorrect}
+              value={question.feedbackOnCorrect}
               type="text"
               className="h-11 w-full rounded-md border border-slate-300 px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
-              onChange={(event) => update("feedbackCorrect", event.target.value)}
+              onChange={(event) => update("feedbackOnCorrect", event.target.value)}
             />
           </div>
         </div>
@@ -92,10 +108,10 @@ export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
           </label>
           <input
             id={`feedback-wrong-${index}`}
-            value={question.feedbackWrong}
+            value={question.feedbackOnWrong}
             type="text"
             className="h-11 w-full rounded-md border border-slate-300 px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
-            onChange={(event) => update("feedbackWrong", event.target.value)}
+            onChange={(event) => update("feedbackOnWrong", event.target.value)}
           />
         </div>
       </div>

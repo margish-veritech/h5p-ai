@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { InputForm } from "@/components/InputForm";
 import { ReviewCard } from "@/components/ReviewCard";
-import type { TrueFalseQuestion } from "@/lib/types";
+import type { Difficulty, TrueFalseQuestion } from "@/lib/types";
 
 type Screen = "input" | "review";
 
@@ -11,6 +11,7 @@ export default function Home() {
   const [screen, setScreen] = useState<Screen>("input");
   const [text, setText] = useState("");
   const [count, setCount] = useState(3);
+  const [difficulty, setDifficulty] = useState<Difficulty>("intermediate");
   const [questions, setQuestions] = useState<TrueFalseQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +26,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ text, count })
+        body: JSON.stringify({ text, count, difficulty })
       });
 
       const payload = (await response.json()) as
@@ -71,10 +72,12 @@ export default function Home() {
         <InputForm
           text={text}
           count={count}
+          difficulty={difficulty}
           isLoading={isLoading}
           error={error}
           onTextChange={setText}
           onCountChange={(value) => setCount(Number.isNaN(value) ? 1 : value)}
+          onDifficultyChange={setDifficulty}
           onSubmit={generateQuestions}
         />
       ) : (

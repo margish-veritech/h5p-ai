@@ -1,22 +1,28 @@
 "use client";
 
+import type { Difficulty } from "@/lib/types";
+
 type InputFormProps = {
   text: string;
   count: number;
+  difficulty: Difficulty;
   isLoading: boolean;
   error: string | null;
   onTextChange: (value: string) => void;
   onCountChange: (value: number) => void;
+  onDifficultyChange: (value: Difficulty) => void;
   onSubmit: () => void;
 };
 
 export function InputForm({
   text,
   count,
+  difficulty,
   isLoading,
   error,
   onTextChange,
   onCountChange,
+  onDifficultyChange,
   onSubmit
 }: InputFormProps) {
   return (
@@ -56,7 +62,7 @@ export function InputForm({
           />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-[220px_1fr] sm:items-end">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <label
               htmlFor="question-count"
@@ -75,21 +81,42 @@ export function InputForm({
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="inline-flex h-11 min-w-44 cursor-pointer items-center justify-center rounded-md bg-cyan-700 px-4 text-sm font-semibold text-white transition hover:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-400"
-          >
-            {isLoading ? (
-              <span className="inline-flex items-center gap-2">
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-                Generating
-              </span>
-            ) : (
-              "Generate Questions"
-            )}
-          </button>
+          <div className="space-y-2">
+            <label
+              htmlFor="difficulty"
+              className="block text-sm font-medium text-slate-800"
+            >
+              Difficulty
+            </label>
+            <select
+              id="difficulty"
+              value={difficulty}
+              className="h-11 w-full cursor-pointer rounded-md border border-slate-300 bg-white px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
+              onChange={(event) =>
+                onDifficultyChange(event.target.value as Difficulty)
+              }
+            >
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
         </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="inline-flex h-11 min-w-44 cursor-pointer items-center justify-center rounded-md bg-cyan-700 px-4 text-sm font-semibold text-white transition hover:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-400"
+        >
+          {isLoading ? (
+            <span className="inline-flex items-center gap-2">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+              Generating
+            </span>
+          ) : (
+            "Generate Questions"
+          )}
+        </button>
 
         {error ? (
           <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
