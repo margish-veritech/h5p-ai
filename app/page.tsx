@@ -153,6 +153,10 @@ export default function Home() {
           onBack={() => setScreen("input")}
         />
       ) : null}
+
+      <div className="mt-10 text-center text-sm text-slate-500">
+        Created & developed by <a className="hover:text-orange-700" href="https://margish-patel.vercel.app" target="_blank">Margish</a>
+      </div>
     </main>
   );
 }
