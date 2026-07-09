@@ -1,4 +1,5 @@
-import type { MultiChoiceQuestion, QuestionSetQuiz } from "./types";
+import { buildQuestionMediaField } from "./h5pImage";
+import type { MultiChoiceAnswer, MultiChoiceQuestion, QuestionSetQuiz } from "./types";
 
 const escapeHtml = (value: string) =>
   value
@@ -58,7 +59,21 @@ const EMPTY_TIPS_AND_FEEDBACK = {
 
 const createSubContentId = () => crypto.randomUUID();
 
-const formatAnswerText = (text: string) => `<div>${escapeHtml(text)}</div>\n`;
+const formatAnswerText = (answer: MultiChoiceAnswer) => {
+  const parts: string[] = [];
+
+  if (answer.image) {
+    parts.push(
+      `<img src="${answer.image.h5pPath}" alt="${escapeHtml(answer.image.alt)}" />`
+    );
+  }
+
+  if (answer.text.trim()) {
+    parts.push(escapeHtml(answer.text));
+  }
+
+  return `<div>${parts.join("<br/>")}</div>\n`;
+};
 
 const countCorrectAnswers = (question: MultiChoiceQuestion) =>
   question.answers.filter((answer) => answer.correct).length;
@@ -67,7 +82,7 @@ const countCorrectAnswers = (question: MultiChoiceQuestion) =>
 export const buildMultiChoiceParams = (question: MultiChoiceQuestion) => ({
   answers: question.answers.map((answer) => ({
     correct: answer.correct,
-    text: formatAnswerText(answer.text),
+    text: formatAnswerText(answer),
     tipsAndFeedback: EMPTY_TIPS_AND_FEEDBACK
   })),
   UI: MULTI_CHOICE_UI,
@@ -86,7 +101,7 @@ export const buildMultiChoiceParams = (question: MultiChoiceQuestion) => ({
     showScorePoints: true,
     enableCheckButton: true
   },
-  media: { disableImageZooming: false },
+  media: buildQuestionMediaField(question.questionImage, question.summary),
   confirmCheck: CONFIRM_CHECK,
   confirmRetry: CONFIRM_RETRY,
   overallFeedback: MULTI_CHOICE_OVERALL_FEEDBACK

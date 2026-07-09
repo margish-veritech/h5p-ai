@@ -1,3 +1,4 @@
+import { addImagesToZip, collectQuestionSetImages } from "./addImagesToZip";
 import {
   buildQuestionSetContentJson,
   buildQuestionSetH5pJson,
@@ -20,6 +21,8 @@ export function generateAndDownloadQuestionSetH5P(quiz: QuestionSetQuiz): void {
       JSON.stringify(buildQuestionSetContentJson(quiz), null, 2),
       { createFolders: false }
     );
+
+    await addImagesToZip(zip, collectQuestionSetImages(quiz));
 
     const blob = await zip.generateAsync({ type: "blob" });
     const url = URL.createObjectURL(blob);

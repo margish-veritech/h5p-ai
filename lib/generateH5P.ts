@@ -1,3 +1,4 @@
+import { addImagesToZip, collectTrueFalseImages } from "./addImagesToZip";
 import {
   buildTrueFalseContentJson,
   buildTrueFalseH5pJson,
@@ -20,6 +21,8 @@ export function generateAndDownloadH5P(question: TrueFalseQuestion): void {
       JSON.stringify(buildTrueFalseContentJson(question), null, 2),
       { createFolders: false }
     );
+
+    await addImagesToZip(zip, collectTrueFalseImages(question));
 
     const blob = await zip.generateAsync({ type: "blob" });
     const url = URL.createObjectURL(blob);

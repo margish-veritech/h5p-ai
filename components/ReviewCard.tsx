@@ -3,6 +3,7 @@
 import { generateAndDownloadH5P } from "@/lib/generateH5P";
 import { applySummaryUpdate } from "@/lib/mapGeneratedQuestions";
 import type { TrueFalseQuestion } from "@/lib/types";
+import { ImageUploadField } from "./ImageUploadField";
 
 type ReviewCardProps = {
   index: number;
@@ -66,6 +67,13 @@ export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
             onChange={(event) => update("question", event.target.value)}
           />
         </div>
+
+        <ImageUploadField
+          label="Question image"
+          image={question.questionImage}
+          defaultAlt={question.summary}
+          onChange={(questionImage) => update("questionImage", questionImage)}
+        />
 
         <div className="grid gap-4 lg:grid-cols-[220px_1fr]">
           <div>

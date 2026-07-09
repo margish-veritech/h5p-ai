@@ -1,3 +1,4 @@
+import { buildQuestionMediaField } from "./h5pImage";
 import type { TrueFalseQuestion } from "./types";
 
 const escapeHtml = (value: string) =>
@@ -45,7 +46,7 @@ export const buildTrueFalseContentJson = (question: TrueFalseQuestion) => ({
     confirmLabel: "Confirm"
   },
   question: `<p>${escapeHtml(question.question)}</p>`,
-  media: { disableImageZooming: false }
+  media: buildQuestionMediaField(question.questionImage, question.summary)
 });
 
 export const buildTrueFalseH5pJson = (question: TrueFalseQuestion) => ({

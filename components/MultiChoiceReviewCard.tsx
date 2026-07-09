@@ -2,6 +2,7 @@
 
 import { applyMultiChoiceSummaryUpdate } from "@/lib/mapGeneratedQuestionSet";
 import type { MultiChoiceQuestion, QuestionSetQuiz } from "@/lib/types";
+import { ImageUploadField } from "./ImageUploadField";
 
 type MultiChoiceReviewCardProps = {
   index: number;
@@ -81,40 +82,61 @@ export function MultiChoiceReviewCard({
           />
         </div>
 
+        <ImageUploadField
+          label="Question image"
+          image={question.questionImage}
+          defaultAlt={question.summary}
+          onChange={(questionImage) => updateQuestion({ ...question, questionImage })}
+        />
+
         <div className="space-y-3">
           <p className="field-label mb-0">Answer options</p>
           {question.answers.map((answer, answerIndex) => (
-            <div
-              key={answerIndex}
-              className={`grid gap-3 rounded-xl border p-3 sm:grid-cols-[1fr_auto] ${
-                answer.correct
-                  ? "border-pine/30 bg-pine-soft/60"
-                  : "border-line bg-stone-50/70"
-              }`}
-            >
-              <input
-                value={answer.text}
-                type="text"
-                className="field-input h-11 border-none bg-white shadow-none focus:ring-2"
-                onChange={(event) => updateAnswer(answerIndex, "text", event.target.value)}
-              />
-              <label
-                className={`inline-flex h-11 cursor-pointer items-center gap-2 rounded-xl border px-3 text-sm font-medium transition ${
+            <div key={answerIndex} className="space-y-3">
+              <div
+                className={`grid gap-3 rounded-xl border p-3 sm:grid-cols-[1fr_auto] ${
                   answer.correct
-                    ? "border-pine bg-white text-pine-dark"
-                    : "border-line bg-white text-muted"
+                    ? "border-pine/30 bg-pine-soft/60"
+                    : "border-line bg-stone-50/70"
                 }`}
               >
                 <input
-                  type="checkbox"
-                  className="accent-pine"
-                  checked={answer.correct}
-                  onChange={(event) =>
-                    updateAnswer(answerIndex, "correct", event.target.checked)
-                  }
+                  value={answer.text}
+                  type="text"
+                  className="field-input h-11 border-none bg-white shadow-none focus:ring-2"
+                  onChange={(event) => updateAnswer(answerIndex, "text", event.target.value)}
                 />
-                Correct
-              </label>
+                <label
+                  className={`inline-flex h-11 cursor-pointer items-center gap-2 rounded-xl border px-3 text-sm font-medium transition ${
+                    answer.correct
+                      ? "border-pine bg-white text-pine-dark"
+                      : "border-line bg-white text-muted"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    className="accent-pine"
+                    checked={answer.correct}
+                    onChange={(event) =>
+                      updateAnswer(answerIndex, "correct", event.target.checked)
+                    }
+                  />
+                  Correct
+                </label>
+              </div>
+              <ImageUploadField
+                label="Answer image (optional)"
+                image={answer.image}
+                defaultAlt={answer.text || question.summary}
+                onChange={(image) =>
+                  updateQuestion({
+                    ...question,
+                    answers: question.answers.map((item, itemIndex) =>
+                      itemIndex === answerIndex ? { ...item, image } : item
+                    )
+                  })
+                }
+              />
             </div>
           ))}
         </div>

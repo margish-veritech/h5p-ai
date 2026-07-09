@@ -28,3 +28,7 @@ pnpm-debug.log*
 .idea/
 .vscode/
 
+# User uploaded images (runtime only)
+user-upload/*
+!user-upload/.gitkeep
+
