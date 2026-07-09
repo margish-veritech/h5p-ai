@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { Difficulty, H5PContentType } from "@/lib/types";
 
 type InputFormProps = {
@@ -15,6 +16,15 @@ type InputFormProps = {
   onContentTypeChange: (value: H5PContentType) => void;
   onSubmit: () => void;
 };
+
+const SAMPLE_CONTENT = `Photosynthesis is the process by which green plants make their own food using sunlight, carbon dioxide, and water. This process mainly happens in the leaves of the plant. Leaves contain a green pigment called chlorophyll, which helps absorb energy from sunlight.
+
+During photosynthesis, plants take in carbon dioxide from the air through tiny openings in their leaves called stomata. They also absorb water from the soil through their roots. Using sunlight as energy, the plant converts carbon dioxide and water into glucose and oxygen.
+
+Glucose is a type of sugar that plants use as food for energy and growth. Oxygen is released back into the air as a by-product of photosynthesis. This oxygen is important for humans, animals, and many other living organisms because they need it to breathe.
+
+Photosynthesis is important because it provides food for plants and also supports life on Earth by producing oxygen. Without photosynthesis, there would be less oxygen in the atmosphere and less food available for many living things.
+`;
 
 const CONTENT_TYPES: Array<{
   value: H5PContentType;
@@ -46,6 +56,35 @@ export function InputForm({
   onContentTypeChange,
   onSubmit
 }: InputFormProps) {
+  const [sampleCopied, setSampleCopied] = useState(false);
+  const resetCopyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetCopyTimeoutRef.current) {
+        clearTimeout(resetCopyTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleCopySample = async () => {
+    try {
+      await navigator.clipboard.writeText(SAMPLE_CONTENT);
+      setSampleCopied(true);
+
+      if (resetCopyTimeoutRef.current) {
+        clearTimeout(resetCopyTimeoutRef.current);
+      }
+
+      resetCopyTimeoutRef.current = setTimeout(() => {
+        setSampleCopied(false);
+        resetCopyTimeoutRef.current = null;
+      }, 5000);
+    } catch {
+      setSampleCopied(false);
+    }
+  };
+
   return (
     <section className="panel">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -59,14 +98,24 @@ export function InputForm({
             to export.
           </p>
         </div>
-        <div className="rounded-2xl border border-line bg-stone-50/80 px-4 py-3 text-sm text-muted">
-          <p className="font-medium text-ink">Output</p>
-          <p className="mt-1">
-            {contentType === "true-false"
-              ? "Separate .h5p per True/False item"
-              : "Single Question Set .h5p quiz"}
-          </p>
-        </div>
+
+        <button
+          type="button"
+          className={`min-w-44 transition ${
+            sampleCopied ? "btn-download" : "btn-secondary"
+          }`}
+          onClick={handleCopySample}
+          aria-live="polite"
+        >
+          {sampleCopied ? (
+            <>
+              <span aria-hidden>✓</span>
+              Copied to clipboard
+            </>
+          ) : (
+            "Copy sample content"
+          )}
+        </button>
       </div>
 
       <form
