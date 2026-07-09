@@ -12,8 +12,17 @@
 
 body {
   margin: 0;
-  background: #f6f8fb;
-  color: #12313f;
+  min-height: 100vh;
+  background-color: #f4f1ec;
+  background-image: radial-gradient(
+      circle at 12% 18%,
+      rgba(217, 72, 53, 0.12),
+      transparent 34%
+    ),
+    radial-gradient(circle at 88% 8%, rgba(29, 79, 145, 0.14), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(15, 118, 110, 0.08), transparent 40%);
+  color: #152033;
+  font-family: var(--font-sans), system-ui, sans-serif;
 }
 
 button,
@@ -21,4 +30,62 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-2xl border border-line/90 bg-panel/95 p-6 shadow-panel backdrop-blur-sm sm:p-7;
+  }
+
+  .panel-muted {
+    @apply rounded-2xl border border-line/80 bg-stone-50/80 p-5;
+  }
+
+  .field-label {
+    @apply mb-2 block text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-muted;
+  }
+
+  .field-input {
+    @apply w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-[0.95rem] text-ink outline-none transition placeholder:text-stone-400 focus:border-ocean focus:ring-4 focus:ring-ocean-soft;
+  }
+
+  .field-textarea {
+    @apply field-input min-h-32 resize-y leading-6;
+  }
+
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-primary {
+    @apply btn h-11 bg-brand text-white shadow-float hover:bg-brand-dark focus:ring-brand-soft;
+  }
+
+  .btn-secondary {
+    @apply btn h-10 border border-line bg-white text-ink hover:border-stone-300 hover:bg-stone-50 focus:ring-ocean-soft;
+  }
+
+  .btn-download {
+    @apply btn h-10 bg-pine text-white shadow-float hover:bg-pine-dark focus:ring-pine-soft;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em];
+  }
+
+  .badge-brand {
+    @apply badge bg-brand-soft text-brand-dark;
+  }
+
+  .badge-ocean {
+    @apply badge bg-ocean-soft text-ocean-dark;
+  }
+
+  .step-pill {
+    @apply inline-flex items-center gap-2 rounded-full border border-line bg-white/80 px-3 py-1 text-xs font-medium text-muted;
+  }
+
+  .step-pill-active {
+    @apply border-ocean/30 bg-ocean-soft text-ocean-dark;
+  }
 }

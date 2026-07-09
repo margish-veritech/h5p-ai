@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { AppShell } from "@/components/AppShell";
 import { InputForm } from "@/components/InputForm";
+import { PageHeader } from "@/components/PageHeader";
 import { QuestionSetReview } from "@/components/QuestionSetReview";
 import { ReviewCard } from "@/components/ReviewCard";
 import type {
@@ -97,7 +99,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+    <AppShell step={screen === "input" ? "create" : "review"}>
       {screen === "input" ? (
         <InputForm
           text={text}
@@ -113,27 +115,18 @@ export default function Home() {
           onSubmit={generateQuestions}
         />
       ) : contentType === "true-false" ? (
-        <section className="mx-auto w-full max-w-4xl">
-          <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-normal text-ink">
-                Review Questions
-              </h1>
-              <p className="mt-1 text-sm leading-6 text-slate-600">
-                Edit each question, then download its H5P file.
-              </p>
-            </div>
+        <section>
+          <PageHeader
+            title="Review questions"
+            description="Edit each True/False item, then download its own H5P package."
+            actions={
+              <button type="button" className="btn-secondary" onClick={() => setScreen("input")}>
+                Back
+              </button>
+            }
+          />
 
-            <button
-              type="button"
-              className="inline-flex h-10 cursor-pointer items-center justify-center rounded-md border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-cyan-700 focus:ring-offset-2"
-              onClick={() => setScreen("input")}
-            >
-              Back
-            </button>
-          </div>
-
-          <div className="grid gap-4">
+          <div className="grid gap-5">
             {trueFalseQuestions.map((question, index) => (
               <ReviewCard
                 key={index}
@@ -153,10 +146,6 @@ export default function Home() {
           onBack={() => setScreen("input")}
         />
       ) : null}
-
-      <div className="mt-10 text-center text-sm text-slate-500">
-        Created & developed by <a className="hover:text-orange-700" href="https://margish-patel.vercel.app" target="_blank">Margish</a>
-      </div>
-    </main>
+    </AppShell>
   );
 }

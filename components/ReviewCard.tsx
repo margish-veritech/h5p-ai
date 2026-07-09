@@ -19,24 +19,26 @@ export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
   };
 
   return (
-    <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-base font-semibold text-ink">{question.title}</h2>
+    <article className="panel overflow-hidden">
+      <div className="flex flex-col gap-4 border-b border-line pb-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <span className="badge-ocean">True / False</span>
+          <h2 className="mt-3 truncate font-display text-xl font-semibold text-ink">
+            {question.title}
+          </h2>
+        </div>
         <button
           type="button"
-          className="inline-flex h-10 cursor-pointer items-center justify-center rounded-md bg-emerald-700 px-4 text-sm font-semibold text-white transition hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
+          className="btn-download shrink-0"
           onClick={() => generateAndDownloadH5P(question)}
         >
           Download .h5p
         </button>
       </div>
 
-      <div className="mt-5 grid gap-4">
-        <div className="space-y-2">
-          <label
-            htmlFor={`summary-${index}`}
-            className="block text-sm font-medium text-slate-800"
-          >
+      <div className="mt-5 grid gap-5">
+        <div>
+          <label htmlFor={`summary-${index}`} className="field-label">
             Topic summary
           </label>
           <input
@@ -44,42 +46,36 @@ export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
             value={question.summary}
             type="text"
             placeholder="e.g. What is Psychology"
-            className="h-11 w-full rounded-md border border-slate-300 px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
+            className="field-input h-11"
             onChange={(event) =>
               onChange(applySummaryUpdate(question, index, event.target.value))
             }
           />
-          <p className="text-sm text-slate-500">Title: {question.title}</p>
+          <p className="mt-2 text-sm text-muted">Package title: {question.title}</p>
         </div>
 
-        <div className="space-y-2">
-          <label
-            htmlFor={`question-${index}`}
-            className="block text-sm font-medium text-slate-800"
-          >
-            Question text
+        <div>
+          <label htmlFor={`question-${index}`} className="field-label">
+            Question statement
           </label>
           <textarea
             id={`question-${index}`}
             value={question.question}
             rows={4}
-            className="min-h-24 w-full rounded-md border border-slate-300 px-3 py-2 text-base leading-6 text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
+            className="field-textarea min-h-24"
             onChange={(event) => update("question", event.target.value)}
           />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="space-y-2">
-            <label
-              htmlFor={`correct-${index}`}
-              className="block text-sm font-medium text-slate-800"
-            >
+        <div className="grid gap-4 lg:grid-cols-[220px_1fr]">
+          <div>
+            <label htmlFor={`correct-${index}`} className="field-label">
               Correct answer
             </label>
             <select
               id={`correct-${index}`}
               value={question.correct ? "true" : "false"}
-              className="h-11 w-full cursor-pointer rounded-md border border-slate-300 bg-white px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
+              className="field-input h-11 cursor-pointer"
               onChange={(event) => update("correct", event.target.value === "true")}
             >
               <option value="true">True</option>
@@ -87,35 +83,29 @@ export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
             </select>
           </div>
 
-          <div className="space-y-2 sm:col-span-2">
-            <label
-              htmlFor={`feedback-correct-${index}`}
-              className="block text-sm font-medium text-slate-800"
-            >
-              Feedback for correct answer
+          <div>
+            <label htmlFor={`feedback-correct-${index}`} className="field-label">
+              Feedback when correct
             </label>
             <input
               id={`feedback-correct-${index}`}
               value={question.feedbackOnCorrect}
               type="text"
-              className="h-11 w-full rounded-md border border-slate-300 px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
+              className="field-input h-11"
               onChange={(event) => update("feedbackOnCorrect", event.target.value)}
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label
-            htmlFor={`feedback-wrong-${index}`}
-            className="block text-sm font-medium text-slate-800"
-          >
-            Feedback for wrong answer
+        <div>
+          <label htmlFor={`feedback-wrong-${index}`} className="field-label">
+            Feedback when wrong
           </label>
           <input
             id={`feedback-wrong-${index}`}
             value={question.feedbackOnWrong}
             type="text"
-            className="h-11 w-full rounded-md border border-slate-300 px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
+            className="field-input h-11"
             onChange={(event) => update("feedbackOnWrong", event.target.value)}
           />
         </div>

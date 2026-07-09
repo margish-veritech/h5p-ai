@@ -16,10 +16,22 @@ type InputFormProps = {
   onSubmit: () => void;
 };
 
-const CONTENT_TYPE_LABELS: Record<H5PContentType, string> = {
-  "true-false": "True/False Question",
-  "question-set": "Quiz (Question Set)"
-};
+const CONTENT_TYPES: Array<{
+  value: H5PContentType;
+  label: string;
+  hint: string;
+}> = [
+  {
+    value: "true-false",
+    label: "True / False",
+    hint: "One H5P file per question"
+  },
+  {
+    value: "question-set",
+    label: "Quiz set",
+    hint: "Multiple choice in one package"
+  }
+];
 
 export function InputForm({
   text,
@@ -34,75 +46,80 @@ export function InputForm({
   onContentTypeChange,
   onSubmit
 }: InputFormProps) {
-  const description =
-    contentType === "true-false"
-      ? "Paste source content, generate True/False questions, edit them, and download one H5P package per question."
-      : "Paste source content, generate a multiple-choice quiz, edit it, and download one Question Set H5P package.";
-
   return (
-    <section className="mx-auto w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-normal text-ink">
-          H5P AI Generator
-        </h1>
-        <p className="max-w-2xl text-sm leading-6 text-slate-600">{description}</p>
+    <section className="panel">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <span className="badge-brand">Generator</span>
+          <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink">
+            Turn notes into H5P
+          </h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
+            Paste your lesson content, pick a format, and get editable questions ready
+            to export.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-line bg-stone-50/80 px-4 py-3 text-sm text-muted">
+          <p className="font-medium text-ink">Output</p>
+          <p className="mt-1">
+            {contentType === "true-false"
+              ? "Separate .h5p per True/False item"
+              : "Single Question Set .h5p quiz"}
+          </p>
+        </div>
       </div>
 
       <form
-        className="mt-6 space-y-5"
+        className="space-y-6"
         onSubmit={(event) => {
           event.preventDefault();
           onSubmit();
         }}
       >
-        <div className="space-y-2">
-          <label
-            htmlFor="content-type"
-            className="block text-sm font-medium text-slate-800"
-          >
-            H5P content type
-          </label>
-          <select
-            id="content-type"
-            value={contentType}
-            className="h-11 w-full cursor-pointer rounded-md border border-slate-300 bg-white px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
-            onChange={(event) =>
-              onContentTypeChange(event.target.value as H5PContentType)
-            }
-          >
-            {Object.entries(CONTENT_TYPE_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+        <div>
+          <p className="field-label">Content type</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {CONTENT_TYPES.map((type) => {
+              const selected = contentType === type.value;
+
+              return (
+                <button
+                  key={type.value}
+                  type="button"
+                  className={`rounded-2xl border p-4 text-left transition ${
+                    selected
+                      ? "border-ocean bg-ocean-soft shadow-float"
+                      : "border-line bg-white hover:border-stone-300 hover:bg-stone-50"
+                  }`}
+                  onClick={() => onContentTypeChange(type.value)}
+                >
+                  <p className="font-semibold text-ink">{type.label}</p>
+                  <p className="mt-1 text-sm text-muted">{type.hint}</p>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <label
-            htmlFor="source-content"
-            className="block text-sm font-medium text-slate-800"
-          >
-            Paste your content here
+        <div>
+          <label htmlFor="source-content" className="field-label">
+            Source content
           </label>
           <textarea
             id="source-content"
             value={text}
             minLength={1}
-            rows={8}
-            className="min-h-32 w-full rounded-md border border-slate-300 px-3 py-2 text-base leading-6 text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
-            placeholder="Paste your content here"
+            rows={9}
+            className="field-textarea"
+            placeholder="Paste a paragraph, article section, or study notes..."
             onChange={(event) => onTextChange(event.target.value)}
           />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <label
-              htmlFor="question-count"
-              className="block text-sm font-medium text-slate-800"
-            >
-              Number of questions
+          <div>
+            <label htmlFor="question-count" className="field-label">
+              Question count
             </label>
             <input
               id="question-count"
@@ -110,22 +127,19 @@ export function InputForm({
               min={1}
               max={10}
               value={count}
-              className="h-11 w-full rounded-md border border-slate-300 px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
+              className="field-input h-11"
               onChange={(event) => onCountChange(Number(event.target.value))}
             />
           </div>
 
-          <div className="space-y-2">
-            <label
-              htmlFor="difficulty"
-              className="block text-sm font-medium text-slate-800"
-            >
+          <div>
+            <label htmlFor="difficulty" className="field-label">
               Difficulty
             </label>
             <select
               id="difficulty"
               value={difficulty}
-              className="h-11 w-full cursor-pointer rounded-md border border-slate-300 bg-white px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
+              className="field-input h-11 cursor-pointer"
               onChange={(event) =>
                 onDifficultyChange(event.target.value as Difficulty)
               }
@@ -137,23 +151,25 @@ export function InputForm({
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="inline-flex h-11 min-w-44 cursor-pointer items-center justify-center rounded-md bg-cyan-700 px-4 text-sm font-semibold text-white transition hover:bg-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-400"
-        >
-          {isLoading ? (
-            <span className="inline-flex items-center gap-2">
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
-              Generating
-            </span>
-          ) : (
-            "Generate Questions"
-          )}
-        </button>
+        <div className="flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted">
+            Questions are generated from your content only. You can edit everything
+            before export.
+          </p>
+          <button type="submit" disabled={isLoading} className="btn-primary min-w-44">
+            {isLoading ? (
+              <>
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                Generating
+              </>
+            ) : (
+              "Generate questions"
+            )}
+          </button>
+        </div>
 
         {error ? (
-          <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
           </p>
         ) : null}
