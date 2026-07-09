@@ -1,40 +1,51 @@
 "use client";
 
-import type { Difficulty } from "@/lib/types";
+import type { Difficulty, H5PContentType } from "@/lib/types";
 
 type InputFormProps = {
   text: string;
   count: number;
   difficulty: Difficulty;
+  contentType: H5PContentType;
   isLoading: boolean;
   error: string | null;
   onTextChange: (value: string) => void;
   onCountChange: (value: number) => void;
   onDifficultyChange: (value: Difficulty) => void;
+  onContentTypeChange: (value: H5PContentType) => void;
   onSubmit: () => void;
+};
+
+const CONTENT_TYPE_LABELS: Record<H5PContentType, string> = {
+  "true-false": "True/False Question",
+  "question-set": "Quiz (Question Set)"
 };
 
 export function InputForm({
   text,
   count,
   difficulty,
+  contentType,
   isLoading,
   error,
   onTextChange,
   onCountChange,
   onDifficultyChange,
+  onContentTypeChange,
   onSubmit
 }: InputFormProps) {
+  const description =
+    contentType === "true-false"
+      ? "Paste source content, generate True/False questions, edit them, and download one H5P package per question."
+      : "Paste source content, generate a multiple-choice quiz, edit it, and download one Question Set H5P package.";
+
   return (
     <section className="mx-auto w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
       <div className="space-y-2">
         <h1 className="text-2xl font-semibold tracking-normal text-ink">
           H5P AI Generator
         </h1>
-        <p className="max-w-2xl text-sm leading-6 text-slate-600">
-          Paste source content, generate True/False questions, edit them, and
-          download one H5P package per question.
-        </p>
+        <p className="max-w-2xl text-sm leading-6 text-slate-600">{description}</p>
       </div>
 
       <form
@@ -44,6 +55,29 @@ export function InputForm({
           onSubmit();
         }}
       >
+        <div className="space-y-2">
+          <label
+            htmlFor="content-type"
+            className="block text-sm font-medium text-slate-800"
+          >
+            H5P content type
+          </label>
+          <select
+            id="content-type"
+            value={contentType}
+            className="h-11 w-full cursor-pointer rounded-md border border-slate-300 bg-white px-3 text-base text-slate-900 outline-none transition focus:border-cyan-700 focus:ring-2 focus:ring-cyan-700/20"
+            onChange={(event) =>
+              onContentTypeChange(event.target.value as H5PContentType)
+            }
+          >
+            {Object.entries(CONTENT_TYPE_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="space-y-2">
           <label
             htmlFor="source-content"
