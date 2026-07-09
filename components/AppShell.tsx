@@ -10,7 +10,7 @@ export function AppShell({ children, step = "create" }: AppShellProps) {
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand to-ocean text-sm font-bold text-white shadow-float">
-              H5
+              H5I
             </div>
             <div>
               <p className="font-display text-lg font-semibold tracking-tight text-ink">
