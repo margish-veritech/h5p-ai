@@ -4,10 +4,17 @@ import {
   safeQuestionSetFilename
 } from "./h5pQuestionSetContent";
 import type { QuestionSetQuiz } from "./types";
+import { validateQuestionSetQuiz } from "./validateContent";
 
-export function generateAndDownloadQuestionSetH5P(quiz: QuestionSetQuiz): void {
+export function generateAndDownloadQuestionSetH5P(quiz: QuestionSetQuiz): string | null {
+  const error = validateQuestionSetQuiz(quiz);
+
+  if (error) {
+    return error;
+  }
+
   void (async () => {
-    if (typeof window === "undefined" || quiz.questions.length === 0) {
+    if (typeof window === "undefined") {
       return;
     }
 
@@ -32,4 +39,6 @@ export function generateAndDownloadQuestionSetH5P(quiz: QuestionSetQuiz): void {
     anchor.remove();
     URL.revokeObjectURL(url);
   })();
+
+  return null;
 }

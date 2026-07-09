@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { generateAndDownloadQuestionSetH5P } from "@/lib/generateQuestionSetH5P";
 import { applyQuizSummaryUpdate } from "@/lib/mapGeneratedQuestionSet";
 import type { QuestionSetQuiz } from "@/lib/types";
@@ -10,9 +11,20 @@ type QuestionSetReviewProps = {
   quiz: QuestionSetQuiz;
   onChange: (quiz: QuestionSetQuiz) => void;
   onBack: () => void;
+  onRegenerate: () => void;
+  isLoading?: boolean;
+  error?: string | null;
 };
 
-export function QuestionSetReview({ quiz, onChange, onBack }: QuestionSetReviewProps) {
+export function QuestionSetReview({
+  quiz,
+  onChange,
+  onBack,
+  onRegenerate,
+  isLoading = false,
+  error = null
+}: QuestionSetReviewProps) {
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   return (
     <section>
       <PageHeader
@@ -20,20 +32,46 @@ export function QuestionSetReview({ quiz, onChange, onBack }: QuestionSetReviewP
         description="Fine-tune the quiz topic and each multiple-choice question, then export one Question Set package."
         actions={
           <>
-            <button type="button" className="btn-secondary" onClick={onBack}>
+            <button type="button" className="btn-secondary" disabled={isLoading} onClick={onBack}>
               Back
             </button>
             <button
               type="button"
-              disabled={quiz.questions.length === 0}
+              className="btn-secondary"
+              disabled={isLoading}
+              onClick={onRegenerate}
+            >
+              {isLoading ? "Regenerating..." : "Regenerate"}
+            </button>
+            <button
+              type="button"
               className="btn-download"
-              onClick={() => generateAndDownloadQuestionSetH5P(quiz)}
+              onClick={() => {
+                setDownloadError(null);
+                const error = generateAndDownloadQuestionSetH5P(quiz);
+
+                if (error) {
+                  setDownloadError(error);
+                }
+              }}
             >
               Download .h5p
             </button>
           </>
         }
       />
+
+      {error ? (
+        <p className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </p>
+      ) : null}
+
+      {downloadError ? (
+        <p className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {downloadError}
+        </p>
+      ) : null}
 
       <div className="panel mb-5">
         <span className="badge-brand">Quiz set</span>

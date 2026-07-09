@@ -120,11 +120,32 @@ export default function Home() {
             title="Review questions"
             description="Edit each True/False item, then download its own H5P package."
             actions={
-              <button type="button" className="btn-secondary" onClick={() => setScreen("input")}>
-                Back
-              </button>
+              <>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  disabled={isLoading}
+                  onClick={() => setScreen("input")}
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  disabled={isLoading}
+                  onClick={() => void generateQuestions()}
+                >
+                  {isLoading ? "Regenerating..." : "Regenerate"}
+                </button>
+              </>
             }
           />
+
+          {error ? (
+            <p className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </p>
+          ) : null}
 
           <div className="grid gap-5">
             {trueFalseQuestions.map((question, index) => (
@@ -144,6 +165,9 @@ export default function Home() {
           quiz={questionSetQuiz}
           onChange={setQuestionSetQuiz}
           onBack={() => setScreen("input")}
+          onRegenerate={() => void generateQuestions()}
+          isLoading={isLoading}
+          error={error}
         />
       ) : null}
     </AppShell>

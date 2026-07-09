@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { applyMultiChoiceSummaryUpdate } from "@/lib/mapGeneratedQuestionSet";
 import type { MultiChoiceQuestion, QuestionSetQuiz } from "@/lib/types";
+import { validateMultiChoiceQuestion } from "@/lib/validateContent";
 
 type MultiChoiceReviewCardProps = {
   index: number;
@@ -16,6 +18,8 @@ export function MultiChoiceReviewCard({
   onQuizChange,
   quiz
 }: MultiChoiceReviewCardProps) {
+  const [optionError, setOptionError] = useState<string | null>(null);
+
   const updateQuestion = (updatedQuestion: MultiChoiceQuestion) => {
     onQuizChange({
       ...quiz,
@@ -30,12 +34,21 @@ export function MultiChoiceReviewCard({
     field: "text" | "correct",
     value: string | boolean
   ) => {
-    updateQuestion({
+    const nextQuestion = {
       ...question,
       answers: question.answers.map((answer, itemIndex) =>
         itemIndex === answerIndex ? { ...answer, [field]: value } : answer
       )
-    });
+    };
+    const validationError = validateMultiChoiceQuestion(nextQuestion);
+
+    if (field === "text" && validationError?.includes("Duplicate")) {
+      setOptionError(validationError);
+      return;
+    }
+
+    setOptionError(null);
+    updateQuestion(nextQuestion);
   };
 
   return (
@@ -117,6 +130,11 @@ export function MultiChoiceReviewCard({
               </label>
             </div>
           ))}
+          {optionError ? (
+            <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {optionError}
+            </p>
+          ) : null}
         </div>
       </div>
     </article>

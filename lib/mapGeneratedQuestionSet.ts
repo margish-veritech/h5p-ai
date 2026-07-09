@@ -71,6 +71,18 @@ const coerceMultiChoiceDraft = (
     return null;
   }
 
+  const seen = new Set<string>();
+
+  for (const answer of answers) {
+    const key = answer.text.trim().toLowerCase();
+
+    if (seen.has(key)) {
+      return null;
+    }
+
+    seen.add(key);
+  }
+
   const correctCount = answers.filter((answer) => answer.correct).length;
 
   if (correctCount < 1) {

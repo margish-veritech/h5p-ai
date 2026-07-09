@@ -4,8 +4,15 @@ import {
   safeH5PFilename
 } from "./h5pContent";
 import type { TrueFalseQuestion } from "./types";
+import { validateTrueFalseQuestion } from "./validateContent";
 
-export function generateAndDownloadH5P(question: TrueFalseQuestion): void {
+export function generateAndDownloadH5P(question: TrueFalseQuestion): string | null {
+  const error = validateTrueFalseQuestion(question);
+
+  if (error) {
+    return error;
+  }
+
   void (async () => {
     if (typeof window === "undefined") {
       return;
@@ -32,4 +39,6 @@ export function generateAndDownloadH5P(question: TrueFalseQuestion): void {
     anchor.remove();
     URL.revokeObjectURL(url);
   })();
+
+  return null;
 }

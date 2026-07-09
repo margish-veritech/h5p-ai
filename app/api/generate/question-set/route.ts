@@ -70,6 +70,15 @@ export async function POST(request: Request) {
       );
     }
 
+    if (quiz.questions.length !== count) {
+      return NextResponse.json(
+        {
+          error: `Expected ${count} valid questions, but only ${quiz.questions.length} could be generated. Try again.`
+        },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json(quiz);
   } catch (error) {
     const message =

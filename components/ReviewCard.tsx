@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { generateAndDownloadH5P } from "@/lib/generateH5P";
 import { applySummaryUpdate } from "@/lib/mapGeneratedQuestions";
 import type { TrueFalseQuestion } from "@/lib/types";
@@ -11,6 +12,8 @@ type ReviewCardProps = {
 };
 
 export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
   const update = <Key extends keyof TrueFalseQuestion>(
     key: Key,
     value: TrueFalseQuestion[Key]
@@ -30,11 +33,24 @@ export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
         <button
           type="button"
           className="btn-download shrink-0"
-          onClick={() => generateAndDownloadH5P(question)}
+          onClick={() => {
+            setDownloadError(null);
+            const error = generateAndDownloadH5P(question);
+
+            if (error) {
+              setDownloadError(error);
+            }
+          }}
         >
           Download .h5p
         </button>
       </div>
+
+      {downloadError ? (
+        <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {downloadError}
+        </p>
+      ) : null}
 
       <div className="mt-5 grid gap-5">
         <div>

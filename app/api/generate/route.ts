@@ -76,6 +76,15 @@ export async function POST(request: Request) {
       );
     }
 
+    if (questions.length !== count) {
+      return NextResponse.json(
+        {
+          error: `Expected ${count} valid questions, but only ${questions.length} could be generated. Try again.`
+        },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json(questions);
   } catch (error) {
     const message =
