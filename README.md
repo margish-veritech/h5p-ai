@@ -26,6 +26,6 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Notes
 
-- OpenAI runs only in `app/api/generate/route.ts`.
+- OpenAI runs in `app/api/generate/true-false/route.ts` and `app/api/generate/question-set/route.ts`.
 - JSZip runs only in the browser through `lib/generateH5P.ts`.
 - The MVP creates one `.h5p` file per True/False question.

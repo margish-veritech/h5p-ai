@@ -33,7 +33,7 @@ const CONTENT_TYPES: Array<{
 }> = [
   {
     value: "true-false",
-    label: "True / False",
+    label: "True-false",
     hint: "One H5P file per question"
   },
   {

@@ -25,7 +25,7 @@ export function ReviewCard({ index, question, onChange }: ReviewCardProps) {
     <article className="panel overflow-hidden">
       <div className="flex flex-col gap-4 border-b border-line pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <span className="badge-ocean">True / False</span>
+          <span className="badge-ocean">True-false</span>
           <h2 className="mt-3 truncate font-display text-xl font-semibold text-ink">
             {question.title}
           </h2>

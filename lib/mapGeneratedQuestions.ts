@@ -97,7 +97,7 @@ export const buildGenerationPrompt = (
   content: string,
   questionCount: number,
   difficulty: string
-) => `Generate ${questionCount} True/False questions from the learning content below.
+) => `Generate ${questionCount} true-false questions from the learning content below.
 
 Difficulty: ${difficulty}
 

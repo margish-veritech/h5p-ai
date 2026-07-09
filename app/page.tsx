@@ -15,6 +15,11 @@ import type {
 
 type Screen = "input" | "review";
 
+const GENERATE_ENDPOINTS: Record<H5PContentType, string> = {
+  "true-false": "/api/generate/true-false",
+  "question-set": "/api/generate/question-set"
+};
+
 export default function Home() {
   const [screen, setScreen] = useState<Screen>("input");
   const [contentType, setContentType] = useState<H5PContentType>("true-false");
@@ -31,12 +36,7 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      const endpoint =
-        contentType === "true-false"
-          ? "/api/generate"
-          : "/api/generate/question-set";
-
-      const response = await fetch(endpoint, {
+      const response = await fetch(GENERATE_ENDPOINTS[contentType], {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -118,7 +118,7 @@ export default function Home() {
         <section>
           <PageHeader
             title="Review questions"
-            description="Edit each True/False item, then download its own H5P package."
+            description="Edit each true-false item, then download its own H5P package."
             actions={
               <>
                 <button

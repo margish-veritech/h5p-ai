@@ -45,7 +45,7 @@ export async function POST(request: Request) {
         {
           role: "system",
           content:
-            "You write educational True/False questions. Return JSON only: {\"questions\":[...]} with content fields only."
+            "You write educational true-false questions. Return JSON only: {\"questions\":[...]} with content fields only."
         },
         {
           role: "user",

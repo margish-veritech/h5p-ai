@@ -67,5 +67,5 @@ export const safeH5PFilename = (value: string) => {
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
 
-  return normalized || "true-false-question";
+  return normalized || "true-false";
 };
