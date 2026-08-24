@@ -53,6 +53,8 @@ Use this step to confirm the goal, acceptance criteria, affected area, issue poi
 
 Only claim work labeled `agent:ready` or a local task with `status: ready`.
 
+All repository changes must be made on a task/feature branch and delivered through a pull request. Agents must not commit directly to `main`, `dev`, release branches, protected branches, shared branches, or other target branches.
+
 ### 5. Before Editing Code
 
 Read the files that own the affected behavior.
@@ -71,6 +73,8 @@ Use this step to understand local patterns before making changes.
 ### 6. While Working
 
 Keep the active task file in `multiagent/tasks/` updated with discoveries, scope changes, changed files, and test findings.
+
+Commit only to the task/feature branch for the active task. Every source, test, documentation, task, log, configuration, or intentionally tracked generated-file change must go through a pull request before it lands on a target branch.
 
 When work becomes blocked or risky, read:
 

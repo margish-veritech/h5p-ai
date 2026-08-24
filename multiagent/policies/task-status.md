@@ -97,10 +97,10 @@ Only one active agent should claim a task.
 
 Do not move a task to `review` unless:
 
-- code is complete
+- scoped implementation is complete
 - tests/checks are recorded
 - done evidence is written
-- PR exists when code changed
+- PR exists when repository files changed
 
 Do not move a task to `done` unless:
 
