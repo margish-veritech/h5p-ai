@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { GeneratedQuestionSearch } from "@/components/GeneratedQuestionSearch";
+import {
+  filterSearchableQuestions,
+  multiChoiceQuestionMatchesSearch
+} from "@/lib/generatedQuestionSearch";
 import { generateAndDownloadQuestionSetH5P } from "@/lib/generateQuestionSetH5P";
 import { applyQuizSummaryUpdate } from "@/lib/mapGeneratedQuestionSet";
 import type { QuestionSetQuiz } from "@/lib/types";
@@ -10,6 +15,8 @@ import { PageHeader } from "./PageHeader";
 type QuestionSetReviewProps = {
   quiz: QuestionSetQuiz;
   onChange: (quiz: QuestionSetQuiz) => void;
+  searchQuery: string;
+  onSearchQueryChange: (query: string) => void;
   onBack: () => void;
   onRegenerate: () => void;
   isLoading?: boolean;
@@ -19,12 +26,20 @@ type QuestionSetReviewProps = {
 export function QuestionSetReview({
   quiz,
   onChange,
+  searchQuery,
+  onSearchQueryChange,
   onBack,
   onRegenerate,
   isLoading = false,
   error = null
 }: QuestionSetReviewProps) {
   const [downloadError, setDownloadError] = useState<string | null>(null);
+  const filteredQuestions = filterSearchableQuestions(
+    quiz.questions,
+    searchQuery,
+    multiChoiceQuestionMatchesSearch
+  );
+
   return (
     <section>
       <PageHeader
@@ -90,16 +105,29 @@ export function QuestionSetReview({
         </div>
       </div>
 
+      <GeneratedQuestionSearch
+        query={searchQuery}
+        resultCount={filteredQuestions.length}
+        totalCount={quiz.questions.length}
+        onQueryChange={onSearchQueryChange}
+      />
+
       <div className="grid gap-5">
-        {quiz.questions.map((question, index) => (
-          <MultiChoiceReviewCard
-            key={index}
-            index={index}
-            question={question}
-            quiz={quiz}
-            onQuizChange={onChange}
-          />
-        ))}
+        {filteredQuestions.length > 0 ? (
+          filteredQuestions.map(({ question, index }) => (
+            <MultiChoiceReviewCard
+              key={index}
+              index={index}
+              question={question}
+              quiz={quiz}
+              onQuizChange={onChange}
+            />
+          ))
+        ) : (
+          <p className="panel-muted text-sm text-muted">
+            No generated questions match this search.
+          </p>
+        )}
       </div>
     </section>
   );

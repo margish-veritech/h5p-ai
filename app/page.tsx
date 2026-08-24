@@ -2,10 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
+import { GeneratedQuestionSearch } from "@/components/GeneratedQuestionSearch";
 import { InputForm } from "@/components/InputForm";
 import { PageHeader } from "@/components/PageHeader";
 import { QuestionSetReview } from "@/components/QuestionSetReview";
 import { ReviewCard } from "@/components/ReviewCard";
+import {
+  filterSearchableQuestions,
+  trueFalseQuestionMatchesSearch
+} from "@/lib/generatedQuestionSearch";
 import type {
   Difficulty,
   H5PContentType,
@@ -37,6 +42,7 @@ export default function Home() {
   const [difficulty, setDifficulty] = useState<Difficulty>("intermediate");
   const [trueFalseQuestions, setTrueFalseQuestions] = useState<TrueFalseQuestion[]>([]);
   const [questionSetQuiz, setQuestionSetQuiz] = useState<QuestionSetQuiz | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractionProgress, setExtractionProgress] = useState(0);
@@ -201,6 +207,7 @@ export default function Home() {
 
     const requestedContentType = contentType;
     setIsGenerating(true);
+    setSearchQuery("");
 
     try {
       const response = await fetch(GENERATE_ENDPOINTS[requestedContentType], {
@@ -265,6 +272,17 @@ export default function Home() {
     );
   };
 
+  const filteredTrueFalseQuestions = filterSearchableQuestions(
+    trueFalseQuestions,
+    searchQuery,
+    trueFalseQuestionMatchesSearch
+  );
+
+  const returnToInput = () => {
+    setSearchQuery("");
+    setScreen("input");
+  };
+
   return (
     <AppShell step={screen === "input" ? "create" : "review"}>
       {screen === "input" ? (
@@ -301,7 +319,7 @@ export default function Home() {
                   type="button"
                   className="btn-secondary"
                   disabled={isGenerating}
-                  onClick={() => setScreen("input")}
+                  onClick={returnToInput}
                 >
                   Back
                 </button>
@@ -323,24 +341,39 @@ export default function Home() {
             </p>
           ) : null}
 
+          <GeneratedQuestionSearch
+            query={searchQuery}
+            resultCount={filteredTrueFalseQuestions.length}
+            totalCount={trueFalseQuestions.length}
+            onQueryChange={setSearchQuery}
+          />
+
           <div className="grid gap-5">
-            {trueFalseQuestions.map((question, index) => (
-              <ReviewCard
-                key={index}
-                index={index}
-                question={question}
-                onChange={(updatedQuestion) =>
-                  updateTrueFalseQuestion(index, updatedQuestion)
-                }
-              />
-            ))}
+            {filteredTrueFalseQuestions.length > 0 ? (
+              filteredTrueFalseQuestions.map(({ question, index }) => (
+                <ReviewCard
+                  key={index}
+                  index={index}
+                  question={question}
+                  onChange={(updatedQuestion) =>
+                    updateTrueFalseQuestion(index, updatedQuestion)
+                  }
+                />
+              ))
+            ) : (
+              <p className="panel-muted text-sm text-muted">
+                No generated questions match this search.
+              </p>
+            )}
           </div>
         </section>
       ) : questionSetQuiz ? (
         <QuestionSetReview
           quiz={questionSetQuiz}
           onChange={setQuestionSetQuiz}
-          onBack={() => setScreen("input")}
+          searchQuery={searchQuery}
+          onSearchQueryChange={setSearchQuery}
+          onBack={returnToInput}
           onRegenerate={() => void generateQuestions()}
           isLoading={isGenerating}
           error={error}
