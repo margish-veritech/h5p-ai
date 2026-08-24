@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { InputForm } from "@/components/InputForm";
 import { PageHeader } from "@/components/PageHeader";
@@ -12,6 +12,15 @@ import type {
   QuestionSetQuiz,
   TrueFalseQuestion
 } from "@/lib/types";
+import type {
+  ExtractRouteResponse,
+  ExtractionErrorCode
+} from "@/lib/source/types";
+import {
+  MAX_SOURCE_CHARACTERS,
+  MAX_UPLOAD_BYTES,
+  SOURCE_FILE_HELP
+} from "@/lib/sourceLimits";
 
 type Screen = "input" | "review";
 
@@ -28,15 +37,173 @@ export default function Home() {
   const [difficulty, setDifficulty] = useState<Difficulty>("intermediate");
   const [trueFalseQuestions, setTrueFalseQuestions] = useState<TrueFalseQuestion[]>([]);
   const [questionSetQuiz, setQuestionSetQuiz] = useState<QuestionSetQuiz | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [extractionProgress, setExtractionProgress] = useState(0);
+  const [pendingFilename, setPendingFilename] = useState<string | null>(null);
+  const [extractedSource, setExtractedSource] = useState<
+    ExtractRouteResponse["source"] | null
+  >(null);
+  const [extractionStats, setExtractionStats] = useState<
+    ExtractRouteResponse["stats"] | null
+  >(null);
+  const [extractionWarnings, setExtractionWarnings] = useState<string[]>([]);
+  const [extractionError, setExtractionError] = useState<string | null>(null);
+  const [pastedTextSeed, setPastedTextSeed] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const extractionRequestRef = useRef<XMLHttpRequest | null>(null);
+  const extractionRequestIdRef = useRef(0);
+
+  useEffect(() => {
+    return () => extractionRequestRef.current?.abort();
+  }, []);
+
+  const handleTextChange = (value: string) => {
+    setText(value);
+    if (!extractedSource && !isExtracting) {
+      setPastedTextSeed(value);
+    }
+  };
+
+  const cancelExtraction = () => {
+    extractionRequestIdRef.current += 1;
+    extractionRequestRef.current?.abort();
+    extractionRequestRef.current = null;
+    setIsExtracting(false);
+    setExtractionProgress(0);
+    setPendingFilename(null);
+    setExtractionError("Extraction cancelled. Your existing source text was preserved.");
+  };
+
+  const extractFiles = (files: File[]) => {
+    setExtractionError(null);
+
+    if (files.length !== 1) {
+      setExtractionError("Upload one file at a time.");
+      return;
+    }
+
+    const file = files[0];
+    const extension = file.name.toLowerCase().match(/\.[^.]+$/)?.[0] ?? "";
+    const supportedExtensions = [".txt", ".csv", ".pdf", ".docx", ".jpg", ".jpeg", ".png", ".webp"];
+
+    if (extension === ".doc") {
+      setExtractionError("Legacy .doc files are not supported. Resave as .docx or PDF.");
+      return;
+    }
+
+    if (!supportedExtensions.includes(extension)) {
+      setExtractionError(`Unsupported file format. Upload ${SOURCE_FILE_HELP}.`);
+      return;
+    }
+
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setExtractionError(
+        `The file is ${(file.size / 1024 / 1024).toFixed(1)} MiB; the limit is ${MAX_UPLOAD_BYTES / 1024 / 1024} MiB.`
+      );
+      return;
+    }
+
+    extractionRequestRef.current?.abort();
+    const requestId = extractionRequestIdRef.current + 1;
+    extractionRequestIdRef.current = requestId;
+
+    const request = new XMLHttpRequest();
+    const formData = new FormData();
+    formData.append("file", file);
+    if (pastedTextSeed.trim()) {
+      formData.append("pastedText", pastedTextSeed);
+    }
+
+    extractionRequestRef.current = request;
+    setIsExtracting(true);
+    setExtractionProgress(0);
+    setPendingFilename(file.name);
+
+    request.open("POST", "/api/extract");
+    request.timeout = 40_000;
+    request.upload.onprogress = (event) => {
+      if (event.lengthComputable && extractionRequestIdRef.current === requestId) {
+        setExtractionProgress(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+      }
+    };
+    request.onload = () => {
+      if (extractionRequestIdRef.current !== requestId) {
+        return;
+      }
+
+      try {
+        const payload = JSON.parse(request.responseText) as
+          | ExtractRouteResponse
+          | { error?: string; code?: ExtractionErrorCode };
+
+        if (request.status < 200 || request.status >= 300 || !("text" in payload)) {
+          throw new Error(
+            "error" in payload && payload.error
+              ? payload.error
+              : "The source could not be extracted."
+          );
+        }
+
+        setText(payload.text);
+        setExtractedSource(payload.source);
+        setExtractionStats(payload.stats);
+        setExtractionWarnings(payload.warnings);
+        setError(null);
+      } catch (caughtError) {
+        setExtractionError(
+          caughtError instanceof Error
+            ? caughtError.message
+            : "The source could not be extracted."
+        );
+      } finally {
+        extractionRequestRef.current = null;
+        setIsExtracting(false);
+        setExtractionProgress(0);
+        setPendingFilename(null);
+      }
+    };
+    request.onerror = () => {
+      if (extractionRequestIdRef.current === requestId) {
+        extractionRequestRef.current = null;
+        setIsExtracting(false);
+        setExtractionProgress(0);
+        setPendingFilename(null);
+        setExtractionError("The upload failed. Check your connection and try again.");
+      }
+    };
+    request.ontimeout = () => {
+      if (extractionRequestIdRef.current === requestId) {
+        extractionRequestRef.current = null;
+        setIsExtracting(false);
+        setExtractionProgress(0);
+        setPendingFilename(null);
+        setExtractionError("Extraction timed out. Try a smaller file or paste the text.");
+      }
+    };
+    request.send(formData);
+  };
 
   const generateQuestions = async () => {
     setError(null);
-    setIsLoading(true);
+
+    if (!text.trim()) {
+      setError("Content is required.");
+      return;
+    }
+
+    if (text.length > MAX_SOURCE_CHARACTERS) {
+      setError(
+        `Content exceeds the ${MAX_SOURCE_CHARACTERS.toLocaleString()}-character limit. Split or shorten it and try again.`
+      );
+      return;
+    }
+
+    const requestedContentType = contentType;
+    setIsGenerating(true);
 
     try {
-      const response = await fetch(GENERATE_ENDPOINTS[contentType], {
+      const response = await fetch(GENERATE_ENDPOINTS[requestedContentType], {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -61,7 +228,7 @@ export default function Home() {
         );
       }
 
-      if (contentType === "true-false") {
+      if (requestedContentType === "true-false") {
         if (!Array.isArray(payload)) {
           throw new Error("Unexpected response from the generator.");
         }
@@ -83,7 +250,7 @@ export default function Home() {
           : "Failed to generate questions."
       );
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
@@ -106,12 +273,21 @@ export default function Home() {
           count={count}
           difficulty={difficulty}
           contentType={contentType}
-          isLoading={isLoading}
+          isLoading={isGenerating}
+          isExtracting={isExtracting}
+          extractionProgress={extractionProgress}
+          pendingFilename={pendingFilename}
+          extractedSource={extractedSource}
+          extractionStats={extractionStats}
+          extractionWarnings={extractionWarnings}
+          extractionError={extractionError}
           error={error}
-          onTextChange={setText}
+          onTextChange={handleTextChange}
           onCountChange={(value) => setCount(Number.isNaN(value) ? 1 : value)}
           onDifficultyChange={setDifficulty}
           onContentTypeChange={setContentType}
+          onFilesSelected={extractFiles}
+          onCancelExtraction={cancelExtraction}
           onSubmit={generateQuestions}
         />
       ) : contentType === "true-false" ? (
@@ -124,7 +300,7 @@ export default function Home() {
                 <button
                   type="button"
                   className="btn-secondary"
-                  disabled={isLoading}
+                  disabled={isGenerating}
                   onClick={() => setScreen("input")}
                 >
                   Back
@@ -132,10 +308,10 @@ export default function Home() {
                 <button
                   type="button"
                   className="btn-secondary"
-                  disabled={isLoading}
+                  disabled={isGenerating}
                   onClick={() => void generateQuestions()}
                 >
-                  {isLoading ? "Regenerating..." : "Regenerate"}
+                  {isGenerating ? "Regenerating..." : "Regenerate"}
                 </button>
               </>
             }
@@ -166,7 +342,7 @@ export default function Home() {
           onChange={setQuestionSetQuiz}
           onBack={() => setScreen("input")}
           onRegenerate={() => void generateQuestions()}
-          isLoading={isLoading}
+          isLoading={isGenerating}
           error={error}
         />
       ) : null}

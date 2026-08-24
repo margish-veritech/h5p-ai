@@ -2,14 +2,9 @@ import {
   buildQuestionSetPrompt,
   mapGeneratedQuestionSet
 } from "@/lib/mapGeneratedQuestionSet";
+import { parseGenerationRequest } from "@/lib/generationRequest";
 import { openai } from "@/lib/openai";
-import type { Difficulty } from "@/lib/types";
 import { NextResponse } from "next/server";
-
-const DIFFICULTIES: Difficulty[] = ["beginner", "intermediate", "advanced"];
-
-const isDifficulty = (value: unknown): value is Difficulty =>
-  typeof value === "string" && DIFFICULTIES.includes(value as Difficulty);
 
 export async function POST(request: Request) {
   if (!process.env.OPENAI_API_KEY) {
@@ -20,22 +15,14 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = (await request.json()) as {
-      text?: unknown;
-      count?: unknown;
-      difficulty?: unknown;
-    };
+    const parsedRequest = parseGenerationRequest(await request.json());
 
-    const text = typeof body.text === "string" ? body.text.trim() : "";
-    const count =
-      typeof body.count === "number" && Number.isFinite(body.count)
-        ? Math.min(10, Math.max(1, Math.round(body.count)))
-        : 3;
-    const difficulty = isDifficulty(body.difficulty) ? body.difficulty : "intermediate";
-
-    if (!text) {
-      return NextResponse.json({ error: "Content is required." }, { status: 400 });
+    if (parsedRequest.error) {
+      const { status, ...payload } = parsedRequest.error;
+      return NextResponse.json(payload, { status });
     }
+
+    const { text, count, difficulty } = parsedRequest.data;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
