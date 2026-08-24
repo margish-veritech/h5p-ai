@@ -10,7 +10,7 @@ issue_points: 1
 depends_on: []
 claimed_by: Codex
 branch: agent/TASK-001-pr-only-git-policy
-pr:
+pr: https://github.com/margish-veritech/h5p-ai/pull/5
 created_at: 2026-08-24
 updated_at: 2026-08-24
 ---
@@ -109,6 +109,8 @@ Fill before review/done:
   - `rg -n "commit|branch|PR|pull request|direct" AGENTS.md docs multiagent`
   - `rg -n "PR exists when code changed|PR is opened if code changed|Link the PR when code changes|code changed" AGENTS.md docs multiagent`
   - `git diff --check`
+  - `git push -u origin agent/TASK-001-pr-only-git-policy`
+  - `gh pr create --base main --head agent/TASK-001-pr-only-git-policy --title "TASK-001: Require PR-only agent changes" --body ...`
 - Test results:
   - `git diff --check` passed.
   - Stale code-only PR wording scan returned no matches.
@@ -116,7 +118,7 @@ Fill before review/done:
 - Behavior verified:
   - Policy docs now state that agents may commit only to task/feature branches and every repository change must go through a pull request.
 - Known limitations:
-  - GitHub PR link will be added after the PR is opened.
+  - None.
 
 ## Handoff Notes
 
@@ -125,5 +127,5 @@ No blocker.
 ## Links
 
 - GitHub Issue:
-- PR:
+- PR: https://github.com/margish-veritech/h5p-ai/pull/5
 - Related ADR:
