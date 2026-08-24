@@ -95,7 +95,7 @@ When claiming GitHub Issue `#123`:
 
 1. Move label from `agent:ready` to `agent:in-progress`.
 2. Comment with agent name and branch.
-3. Create branch.
+3. Create a task/feature branch.
 4. Create or update local task file.
 
 Branch format:
@@ -115,6 +115,12 @@ For repo-only work, use:
 ```text
 multiagent/tasks/TASK-000-short-title.md
 ```
+
+## Pull Request Rule
+
+Every repository change must be made on a task/feature branch and delivered through a pull request before it lands on `main`, `dev`, release, protected, shared, or other target branches.
+
+Agents may commit only to the task/feature branch for the active task. Agents must not commit directly to target branches or push/merge changes to target branches outside a pull request.
 
 ## Working The Task
 
@@ -145,7 +151,7 @@ Before moving to `review`, update:
 - test results
 - one-line log
 - GitHub Issue labels
-- PR link, if available
+- PR link for any repository changes
 
 ## Blocking The Task
 

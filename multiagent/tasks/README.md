@@ -27,5 +27,5 @@ TASK-000-short-title.md
 - Record discoveries while working.
 - List changed files before review.
 - Record commands and results.
-- Link the PR when code changes.
+- Link the PR when repository files change.
 - Add handoff notes if incomplete or risky.

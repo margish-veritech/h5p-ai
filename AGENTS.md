@@ -121,6 +121,14 @@ For repo-only tasks:
 agent/TASK-<task-number>-<short-title>
 ```
 
+## Git And Pull Requests
+
+Agents may commit only on task/feature branches. For this repo, agent feature branches use the `agent/GH-...` or `agent/TASK-...` branch formats.
+
+Agents must not commit directly to `main`, `dev`, release branches, protected branches, shared branches, or any other target branch.
+
+Every repository change must be proposed through a pull request before it lands on a target branch. This includes source code, tests, documentation, task files, logs, configuration, and generated artifacts that are intentionally tracked.
+
 ## Required Before Editing
 
 Before editing code, the agent must understand:
@@ -142,12 +150,14 @@ A task may only be marked `done` or `review` when:
 - done evidence is written
 - `multiagent/logs/<YYYY-MM>.md` is updated
 - GitHub Issue or task status is updated
-- PR is opened if code changed
+- PR is opened if any repository file changed
 
 ## Forbidden Actions
 
 Agents must not:
 
+- commit directly to `main`, `dev`, release branches, protected branches, shared branches, or any other target branch
+- push or merge repository changes to a target branch outside a pull request
 - commit secrets, tokens, `.env` files, private keys, or credentials
 - rewrite git history unless explicitly instructed
 - delete user work

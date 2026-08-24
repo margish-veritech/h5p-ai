@@ -9,6 +9,7 @@ Agents may do these without approval when scoped to the active task:
 - add or update tests
 - update documentation
 - create task branches
+- commit scoped changes to task/feature branches
 - classify issues for readiness
 - create GitHub sub-issues from a clear parent requirement
 - update non-terminal GitHub triage labels
@@ -42,6 +43,13 @@ Agents must get explicit human approval before:
 - rewriting git history
 - changing deployment secrets/config
 - closing issues without PR/review
+
+## Forbidden Actions
+
+Agents must not:
+
+- commit directly to `main`, `dev`, release branches, protected branches, shared branches, or any other target branch
+- push or merge repository changes to a target branch outside a pull request
 
 ## Project-Specific Notes
 
