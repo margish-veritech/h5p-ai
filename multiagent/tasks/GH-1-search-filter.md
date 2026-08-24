@@ -3,7 +3,7 @@ id: GH-1
 source: github
 github_issue: 1
 title: "After question generation: add Search filter so user can find question related to a searched query"
-status: review
+status: done
 priority: P1
 sequence: 001
 issue_points: 2
@@ -80,6 +80,7 @@ Reason: UI-only filtering of already-generated client state. No API, data flow, 
 - 2026-08-24: Added a shared generated-question search matcher that normalizes case and whitespace and preserves original indexes for edits while filtered.
 - 2026-08-24: Added one search control on generated review screens for both true-false and question-set results, with an explicit clear button and empty-result message.
 - 2026-08-24: Opened PR #2 for review.
+- 2026-08-24: PR #2 merged into `dev` at `319b11362cc1f64b3b21c4556748fe7383458d20`; issue #1 closed and labeled `agent:done`.
 
 ## Test Requirements
 
