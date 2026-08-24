@@ -3,14 +3,14 @@ id: GH-1
 source: github
 github_issue: 1
 title: "After question generation: add Search filter so user can find question related to a searched query"
-status: in_progress
+status: review
 priority: P1
 sequence: 001
 issue_points: 2
 depends_on: []
 claimed_by: Codex
 branch: agent/GH-1-search-filter
-pr:
+pr: https://github.com/margish-veritech/h5p-ai/pull/2
 created_at: 2026-08-24
 updated_at: 2026-08-24
 ---
@@ -79,6 +79,7 @@ Reason: UI-only filtering of already-generated client state. No API, data flow, 
 - 2026-08-24: Working tree before code changes had pre-existing untracked `.h5p-library-cache/`; leaving it untouched.
 - 2026-08-24: Added a shared generated-question search matcher that normalizes case and whitespace and preserves original indexes for edits while filtered.
 - 2026-08-24: Added one search control on generated review screens for both true-false and question-set results, with an explicit clear button and empty-result message.
+- 2026-08-24: Opened PR #2 for review.
 
 ## Test Requirements
 
@@ -146,5 +147,5 @@ Use this if incomplete or risky.
 ## Links
 
 - GitHub Issue: https://github.com/margish-veritech/h5p-ai/issues/1
-- PR:
+- PR: https://github.com/margish-veritech/h5p-ai/pull/2
 - Related ADR:
