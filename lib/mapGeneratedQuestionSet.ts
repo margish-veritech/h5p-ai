@@ -1,4 +1,8 @@
 import { formatQuestionTitle, normalizeSummary } from "./questionTitle";
+import {
+  formatUntrustedSource,
+  UNTRUSTED_SOURCE_INSTRUCTION
+} from "./untrustedSource";
 import type {
   GeneratedMultiChoiceDraft,
   GeneratedQuestionSetDraft,
@@ -165,8 +169,10 @@ export const buildQuestionSetPrompt = (
 
 Difficulty: ${difficulty}
 
-Content:
-${content}
+${UNTRUSTED_SOURCE_INSTRUCTION}
+
+Source content:
+${formatUntrustedSource(content)}
 
 Return only quiz content. Do not include H5P fields, library names, HTML, or markdown.
 

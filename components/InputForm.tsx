@@ -2,6 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Difficulty, H5PContentType } from "@/lib/types";
+import type { ExtractRouteResponse } from "@/lib/source/types";
+import {
+  MAX_SOURCE_CHARACTERS,
+  SOURCE_WARNING_CHARACTERS
+} from "@/lib/sourceLimits";
+import { SourceUpload } from "./SourceUpload";
 
 type InputFormProps = {
   text: string;
@@ -9,11 +15,20 @@ type InputFormProps = {
   difficulty: Difficulty;
   contentType: H5PContentType;
   isLoading: boolean;
+  isExtracting: boolean;
+  extractionProgress: number;
+  pendingFilename: string | null;
+  extractedSource: ExtractRouteResponse["source"] | null;
+  extractionStats: ExtractRouteResponse["stats"] | null;
+  extractionWarnings: string[];
+  extractionError: string | null;
   error: string | null;
   onTextChange: (value: string) => void;
   onCountChange: (value: number) => void;
   onDifficultyChange: (value: Difficulty) => void;
   onContentTypeChange: (value: H5PContentType) => void;
+  onFilesSelected: (files: File[]) => void;
+  onCancelExtraction: () => void;
   onSubmit: () => void;
 };
 
@@ -49,11 +64,20 @@ export function InputForm({
   difficulty,
   contentType,
   isLoading,
+  isExtracting,
+  extractionProgress,
+  pendingFilename,
+  extractedSource,
+  extractionStats,
+  extractionWarnings,
+  extractionError,
   error,
   onTextChange,
   onCountChange,
   onDifficultyChange,
   onContentTypeChange,
+  onFilesSelected,
+  onCancelExtraction,
   onSubmit
 }: InputFormProps) {
   const [sampleCopied, setSampleCopied] = useState(false);
@@ -135,6 +159,7 @@ export function InputForm({
                 <button
                   key={type.value}
                   type="button"
+                  disabled={isLoading || isExtracting}
                   className={`rounded-2xl border p-4 text-left transition ${
                     selected
                       ? "border-ocean bg-ocean-soft shadow-float"
@@ -152,7 +177,7 @@ export function InputForm({
 
         <div>
           <label htmlFor="source-content" className="field-label">
-            Source content
+            Source content and editable extraction preview
           </label>
           <textarea
             id="source-content"
@@ -161,9 +186,37 @@ export function InputForm({
             rows={9}
             className="field-textarea"
             placeholder="Paste a paragraph, article section, or study notes..."
+            disabled={isLoading || isExtracting}
             onChange={(event) => onTextChange(event.target.value)}
           />
+          <div className="mt-2 flex items-center justify-between gap-3 text-xs text-muted">
+            <span>Generation uses exactly the text shown here.</span>
+            <span
+              className={
+                text.length > MAX_SOURCE_CHARACTERS
+                  ? "font-semibold text-red-700"
+                  : text.length >= SOURCE_WARNING_CHARACTERS
+                    ? "font-semibold text-amber-700"
+                    : ""
+              }
+            >
+              {text.length.toLocaleString()} / {MAX_SOURCE_CHARACTERS.toLocaleString()}
+            </span>
+          </div>
         </div>
+
+        <SourceUpload
+          disabled={isLoading}
+          isExtracting={isExtracting}
+          progress={extractionProgress}
+          pendingFilename={pendingFilename}
+          source={extractedSource}
+          stats={extractionStats}
+          warnings={extractionWarnings}
+          error={extractionError}
+          onFilesSelected={onFilesSelected}
+          onCancel={onCancelExtraction}
+        />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
@@ -177,6 +230,7 @@ export function InputForm({
               max={10}
               value={count}
               className="field-input h-11"
+              disabled={isLoading || isExtracting}
               onChange={(event) => onCountChange(Number(event.target.value))}
             />
           </div>
@@ -189,6 +243,7 @@ export function InputForm({
               id="difficulty"
               value={difficulty}
               className="field-input h-11 cursor-pointer"
+              disabled={isLoading || isExtracting}
               onChange={(event) =>
                 onDifficultyChange(event.target.value as Difficulty)
               }
@@ -205,7 +260,16 @@ export function InputForm({
             Questions are generated from your content only. You can edit everything
             before export.
           </p>
-          <button type="submit" disabled={isLoading} className="btn-primary min-w-44">
+          <button
+            type="submit"
+            disabled={
+              isLoading ||
+              isExtracting ||
+              !text.trim() ||
+              text.length > MAX_SOURCE_CHARACTERS
+            }
+            className="btn-primary min-w-44"
+          >
             {isLoading ? (
               <>
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />

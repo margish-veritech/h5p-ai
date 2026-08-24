@@ -1,5 +1,9 @@
 import { formatQuestionTitle, normalizeSummary } from "./questionTitle";
 import type { GeneratedQuestionDraft, TrueFalseQuestion } from "./types";
+import {
+  formatUntrustedSource,
+  UNTRUSTED_SOURCE_INSTRUCTION
+} from "./untrustedSource";
 
 const trim = (value: unknown) => (typeof value === "string" ? value.trim() : "");
 
@@ -101,8 +105,10 @@ export const buildGenerationPrompt = (
 
 Difficulty: ${difficulty}
 
-Content:
-${content}
+${UNTRUSTED_SOURCE_INSTRUCTION}
+
+Source content:
+${formatUntrustedSource(content)}
 
 Return only question content. Do not include H5P fields, library names, HTML, or markdown.
 

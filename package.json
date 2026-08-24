@@ -2,16 +2,24 @@
   "name": "h5p-ai-generator",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "lint": "next lint",
+    "test": "vitest run",
+    "test:pdf-runtime": "node tests/pdfServerRuntime.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "csv-parse": "6.1.0",
     "jszip": "^3.10.1",
+    "mammoth": "1.12.1",
     "next": "^14.2.35",
     "openai": "^4.104.0",
+    "pdfjs-dist": "4.10.38",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -24,6 +32,7 @@
     "eslint-config-next": "^14.2.35",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "3.2.4"
   }
 }

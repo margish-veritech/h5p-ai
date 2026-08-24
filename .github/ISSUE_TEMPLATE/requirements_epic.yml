@@ -1,0 +1,123 @@
+name: Requirements Epic
+description: Capture a larger requirement that agents should triage and break down.
+title: "[Epic]: "
+labels:
+  - agent:needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for larger requirements, multi-area changes, or work that may need several child issues. A triage agent should classify it before implementation and split it when appropriate.
+
+        1 issue point = 1 hour of expected implementation, verification, and documentation work. Requirements over 8 issue points should be broken into smaller issues.
+  - type: textarea
+    id: requirement_summary
+    attributes:
+      label: Requirement Summary
+      description: Summarize the requirement in plain language.
+    validations:
+      required: true
+  - type: textarea
+    id: user_business_outcome
+    attributes:
+      label: User / Business Outcome
+      description: What user or business result should this enable?
+    validations:
+      required: true
+  - type: textarea
+    id: known_constraints
+    attributes:
+      label: Known Constraints
+      description: List technical, product, timing, compliance, security, or operational constraints.
+      placeholder: |
+        - ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_scope
+    attributes:
+      label: Proposed Scope
+      description: What should be included?
+      placeholder: |
+        - ...
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-Goals
+      description: What should explicitly stay out of scope?
+      placeholder: |
+        - ...
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: List overall completion criteria for the requirement.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: possible_sub_areas
+    attributes:
+      label: Possible Sub-Areas
+      description: Which areas might become child issues?
+      placeholder: |
+        - API
+        - UI
+        - tests
+        - docs
+    validations:
+      required: false
+  - type: dropdown
+    id: estimated_issue_points
+    attributes:
+      label: Estimated Issue Points
+      description: Estimate total work if known. Anything over 8 issue points should be split into child issues.
+      options:
+        - Unknown
+        - 1 issue point
+        - 2 issue points
+        - 3 issue points
+        - 4 issue points
+        - 5 issue points
+        - 6 issue points
+        - 7 issue points
+        - 8 issue points
+        - Over 8 issue points - needs breakdown
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - priority:P0
+        - priority:P1
+        - priority:P2
+        - priority:P3
+      default: 2
+    validations:
+      required: true
+  - type: input
+    id: deadline
+    attributes:
+      label: Deadline If Any
+      description: Use a concrete date if there is a deadline.
+      placeholder: "YYYY-MM-DD or none"
+    validations:
+      required: false
+  - type: textarea
+    id: open_questions
+    attributes:
+      label: Open Questions
+      description: What still needs product, design, security, data, or technical clarification?
+      placeholder: |
+        - ...
+    validations:
+      required: false
