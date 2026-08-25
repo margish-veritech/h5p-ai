@@ -1,13 +1,5 @@
 # Glossary
 
-## Agent
-
-An AI coding assistant or automation working in the repository.
-
-## Agentic Development Protocol
-
-The repo-local workflow in `AGENTS.md` and `multiagent/` that defines how agents pick up tasks, record evidence, and hand off work.
-
 ## H5P
 
 A package format and ecosystem for interactive learning content. This repo generates `.h5p` quiz packages in the browser.
@@ -39,11 +31,3 @@ Canonical plain text produced from pasted content and/or uploaded files before q
 ## Generation Request
 
 The validated request sent to a quiz generation API route, including source text, question count, and difficulty.
-
-## Done Evidence
-
-The changed files, commands, test results, behavior verification, and limitations recorded before moving a task to review or done.
-
-## Handoff
-
-A durable note in `multiagent/handoffs/` explaining incomplete work so another human or agent can continue without chat history.

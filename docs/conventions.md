@@ -17,11 +17,9 @@
 - Source extraction logic lives under `lib/source/`.
 - Tests live under `tests/`.
 - Static H5P examples live under `h5p-examples/`.
-- Agent task memory lives under `multiagent/`.
 
 ## Naming
 
-- Branches: `agent/GH-<issue-number>-<short-title>` or `agent/TASK-<task-number>-<short-title>`.
 - Components: PascalCase React component files.
 - Functions: camelCase.
 - Types: PascalCase.
